@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: opa-activate
+data:
+  k8s_opa_activate.sh: |+
+    #!/bin/bash
+
+    # Get the hostname
+    hostname=$(hostname)
+
+    # Extract the last digit(s) from the hostname
+    last_digits=$(echo "$hostname" | grep -oE '[0-9]+$')
+
+    # Define environment variable names based on the pattern
+    code="ACTIVATION_CODE_${last_digits}"
+    force="FORCE_ACTIVATION_${last_digits}"
+
+    # Check if the environment variable exists
+    if [ -n "${!code}" ]; then
+        options=""
+        echo "Environment variable ${code} found with force option set to: ${!force}"
+        if [ -f /var/lib/workato-agent/conf/cert.key ];then
+          if [ "${!force}" == "true" ];then
+            echo "Forced to replace existing key."
+            options="--force"
+          else
+            echo "Existing key already found. Skipping activation."
+            exit 0
+          fi
+        fi
+        /usr/lib/workato-agent/bin/activate.sh --code ${!code} ${options}
+    else
+        echo "Environment variable ${code} does not exist. Nothing to do."
+        exit 0
+    fi
