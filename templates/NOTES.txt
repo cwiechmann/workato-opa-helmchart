@@ -1,0 +1,12 @@
+{{- $replicas := .Values.replicaCount | int -}}
+{{- $releaseNamespace:= .Release.Namespace -}}
+{{- $releaseName := .Release.Name -}}
+
+You have configured: $replicas Workato OPA's.
+
+To check the status you may run:
+{{- range $i, $e := until $replicas }}
+  kubectl get pods --namespace {{ $releaseNamespace }} workato-opa-{{ $i }}
+{{- end }}
+
+Once you have validated OPAs are running successfully, please test the connection from the Workato platform Web-UI.
