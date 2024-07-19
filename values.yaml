@@ -95,6 +95,8 @@ autoscaling:
   # targetMemoryUtilizationPercentage: 80
 
 volumes: 
+ # Default hostPath volume - Not supposed for production
+ # Please configure a volume according to your environment
  - name: conf
    hostPath:
      path: /tmp/data/opa/conf
